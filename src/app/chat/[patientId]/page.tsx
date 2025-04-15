@@ -10,7 +10,7 @@ interface Message {
   id: string;
   text: string;
   senderId: string;
-  timestamp: any;
+  timestamp: string;
   senderName: string;
 }
 

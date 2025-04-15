@@ -5,8 +5,16 @@ import { auth, db } from '../lib/firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 
+interface Patient {
+  uid: string;
+  email: string;
+  name: string;
+  type: 'patient';
+  createdAt: string;
+}
+
 interface PatientAuthContextType {
-  patient: any;
+  patient: Patient | null;
   loginAsPatient: (email: string, password: string) => Promise<void>;
   registerPatient: (email: string, password: string, name: string) => Promise<void>;
   logoutPatient: () => Promise<void>;
@@ -15,7 +23,7 @@ interface PatientAuthContextType {
 const PatientAuthContext = createContext<PatientAuthContextType | undefined>(undefined);
 
 export function PatientAuthProvider({ children }: { children: React.ReactNode }) {
-  const [patient, setPatient] = useState<any>(null);
+  const [patient, setPatient] = useState<Patient | null>(null);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -23,7 +31,12 @@ export function PatientAuthProvider({ children }: { children: React.ReactNode })
         // Check if this user is a patient
         const patientDoc = await getDoc(doc(db, 'patients', user.uid));
         if (patientDoc.exists()) {
-          setPatient({ ...user, ...patientDoc.data() });
+          const { email, ...patientData } = patientDoc.data() as Omit<Patient, 'uid'>;
+          setPatient({
+            uid: user.uid,
+            email: user.email || '',
+            ...patientData
+          });
         } else {
           setPatient(null);
         }

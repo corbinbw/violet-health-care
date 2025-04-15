@@ -14,6 +14,7 @@ interface Patient {
   email?: string;
   assignedDoctors?: string[];
   doctorNames?: string[];
+  hasUnreadMessages?: boolean;
 }
 
 interface Appointment {
@@ -50,7 +51,18 @@ interface AddPatientModalProps {
   error?: string;
 }
 
-const PatientCard = ({ patient, onViewDetails, onChat, onDelete }) => {
+interface PatientCardProps {
+  patient: Patient;
+  onViewDetails: (patient: Patient) => void;
+  onChat: (patient: Patient) => void;
+  onDelete: (patient: Patient) => void;
+}
+
+interface EmptyStateProps {
+  onAddPatient: () => void;
+}
+
+const PatientCard = ({ patient, onViewDetails, onChat, onDelete }: PatientCardProps) => {
   const initial = patient.name[0].toUpperCase();
   const [isHovered, setIsHovered] = useState(false);
   
@@ -104,7 +116,7 @@ const PatientCard = ({ patient, onViewDetails, onChat, onDelete }) => {
   );
 };
 
-const EmptyState = ({ onAddPatient }) => (
+const EmptyState = ({ onAddPatient }: EmptyStateProps) => (
   <div className="text-center py-12">
     <div className="w-24 h-24 mx-auto mb-6 bg-violet-100 rounded-full flex items-center justify-center">
       <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-violet-600" viewBox="0 0 20 20" fill="currentColor">
@@ -180,7 +192,8 @@ const AddPatientModal = ({ isOpen, onClose, onAddPatient, error }: AddPatientMod
       setConfirmPassword('');
       onClose();
     } catch (err: any) {
-      setLocalError(err.message || 'Failed to add patient');
+      console.error('Error:', err);
+      setLocalError(err instanceof Error ? err.message : 'An error occurred. Please try again.');
     }
   };
 

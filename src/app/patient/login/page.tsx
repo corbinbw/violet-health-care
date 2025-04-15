@@ -40,9 +40,9 @@ export default function PatientLoginPage() {
         await loginAsPatient(email, password);
       }
       router.push('/patient/dashboard');
-    } catch (err: any) {
+    } catch (err) {
       console.error('Auth error:', err);
-      setError(err.message || 'An error occurred. Please try again.');
+      setError(err instanceof Error ? err.message : 'An error occurred. Please try again.');
     }
   };
 
