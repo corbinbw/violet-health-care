@@ -31,7 +31,7 @@ export function PatientAuthProvider({ children }: { children: React.ReactNode })
         // Check if this user is a patient
         const patientDoc = await getDoc(doc(db, 'patients', user.uid));
         if (patientDoc.exists()) {
-          const { email, ...patientData } = patientDoc.data() as Omit<Patient, 'uid'>;
+          const { email: _, ...patientData } = patientDoc.data() as Omit<Patient, 'uid'>;
           setPatient({
             uid: user.uid,
             email: user.email || '',

@@ -17,8 +17,9 @@ export default function LoginPage() {
     try {
       await signIn(email, password);
       router.push('/dashboard');
-    } catch (err) {
-      setError('Failed to sign in. Please check your credentials.');
+    } catch (error: unknown) {
+      console.error('Login error:', error);
+      setError(error instanceof Error ? error.message : 'Failed to login');
     }
   };
 
@@ -26,8 +27,9 @@ export default function LoginPage() {
     try {
       await signUp(email, password);
       router.push('/dashboard');
-    } catch (err) {
-      setError('Failed to create account. Email might be in use.');
+    } catch (error: unknown) {
+      console.error('Registration error:', error);
+      setError(error instanceof Error ? error.message : 'Failed to register');
     }
   };
 

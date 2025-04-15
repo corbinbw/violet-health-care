@@ -64,13 +64,10 @@ interface EmptyStateProps {
 
 const PatientCard = ({ patient, onViewDetails, onChat, onDelete }: PatientCardProps) => {
   const initial = patient.name[0].toUpperCase();
-  const [isHovered, setIsHovered] = useState(false);
   
   return (
     <div 
       className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-200 border border-purple-100"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 rounded-full bg-violet-100 flex items-center justify-center">
@@ -191,9 +188,9 @@ const AddPatientModal = ({ isOpen, onClose, onAddPatient, error }: AddPatientMod
       setPassword('');
       setConfirmPassword('');
       onClose();
-    } catch (err: any) {
-      console.error('Error:', err);
-      setLocalError(err instanceof Error ? err.message : 'An error occurred. Please try again.');
+    } catch (error: unknown) {
+      console.error('Error:', error);
+      setLocalError(error instanceof Error ? error.message : 'An error occurred. Please try again.');
     }
   };
 
@@ -362,7 +359,7 @@ export default function DashboardPage() {
       return;
     }
     fetchPatients();
-  }, [user, router]);
+  }, [user, router, fetchPatients]);
 
   // Periodic refresh of patients
   useEffect(() => {
@@ -373,7 +370,7 @@ export default function DashboardPage() {
     }, 10000); // Refresh every 10 seconds
 
     return () => clearInterval(interval);
-  }, [user]);
+  }, [user, fetchPatients]);
 
   // Add real-time listeners for appointments and notes
   useEffect(() => {
@@ -746,9 +743,9 @@ export default function DashboardPage() {
       
       // Sign back in as the doctor
       router.push('/login');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error adding patient:', error);
-      setSearchError(error.message || 'Failed to add patient');
+      setSearchError(error instanceof Error ? error.message : 'Failed to add patient');
     }
   };
 

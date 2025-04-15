@@ -228,32 +228,6 @@ export default function PatientDashboardPage() {
     }
   };
 
-  const removeDoctor = async (doctorId: string) => {
-    if (!patient) return;
-    
-    try {
-      const patientQuery = query(
-        collection(db, 'patients'),
-        where('id', '==', patient.uid)
-      );
-      const patientSnapshot = await getDocs(patientQuery);
-      
-      if (!patientSnapshot.empty) {
-        const patientDoc = patientSnapshot.docs[0];
-        const patientData = patientDoc.data();
-        const updatedDoctors = patientData.assignedDoctors.filter((id: string) => id !== doctorId);
-        
-        await updateDoc(doc(db, 'patients', patientDoc.id), {
-          assignedDoctors: updatedDoctors
-        });
-        
-        setDoctors(doctors.filter(d => d.id !== doctorId));
-      }
-    } catch (error) {
-      console.error('Error removing doctor:', error);
-    }
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-purple-50">
